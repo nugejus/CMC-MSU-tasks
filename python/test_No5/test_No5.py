@@ -1,3 +1,4 @@
+
 # 5. Написать программу, позволяющую проверять для текста выполнение закона Ципфа-Мальдеброта. Программа должна:
 
 #     1. осуществлять морфологический анализ словоформ текста;
@@ -9,7 +10,6 @@
 
 # Прикладные задачи: оценка естественности текста, определение стиля/жанра текста.
 
-#####################################################################################################################################
 #importing modules
 import nltk
 from nltk.corpus import stopwords
@@ -22,8 +22,7 @@ from collections import Counter
 import operator
 import matplotlib.pyplot as plt
 from tqdm.notebook import tqdm
-######################################################################################################################################
-#methods
+
 #parse the words
 def morphy(word):
     #retuning normal form of word
@@ -77,7 +76,12 @@ with tqdm(total=len(Text_tokenized)) as pbar: #to see how many times left
         Text_dict[word]=f_morphy_dict(word)
         pbar.update(1)
 
-#####################################################################################################################
+#stop words including
+#words from module were not enough
+stop_words_file=open("stop_words.txt",'r',encoding="utf-8")
+stop_words_list=stop_words_file.read()
+stop_words_file.close()
+stop_words=stop_words_list.split('\n')
 
 # осуществлять морфологический анализ словоформ текста;
 # подсчитывать частоты и ранги различных словоформ и лемм;
@@ -87,11 +91,9 @@ with tqdm(total=len(Text_tokenized)) as pbar: #to see how many times left
 #clearing digits
 Text_cleared=[]
 for word in Text_morphy:
-    if not word.isdigit():
+    if not word.isdigit() and word not in stop_words:
         Text_cleared.append(word)
     pbar.update(1)
-
-print(Text_cleared) #print morphs
 
 #giving Rank of text
 Text_counted=dict(Counter(Text_cleared))
@@ -118,8 +120,6 @@ value=list(word_frequency.values())
 print('The highest 10 ranks and frequencies')
 for i in range(10): 
     print(key[i],':',value[i])
-
-############################################################################################################################
 
 #определение стиля/жанра текста.
 
@@ -170,7 +170,7 @@ NPRO=Dict_count['NPRO']/len(Text_counted) #доля частиц
 PRCL=Dict_count['PRCL']/len(Text_counted) #доля местоимений
 ADJF=Dict_count['ADJF']/len(Text_counted) #доля прилагательных
 
-#print the result
+
 if mid_len_sent>=18 and Beta<=0.1:
     print('The type of text: Деловой стиль')
 elif NPRO>=0.02 and PRCL>=0.03:
