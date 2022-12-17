@@ -14,6 +14,12 @@
     )
 )
 
+(defun listiter (iter nodenum val)
+    (cond
+        ((null iter) nil)
+        ; ((eq '+ iter) (append (list makeauto nodenum val (getlastnode )) (list makeauto)))
+    )
+)
 
 (defun ifchar(exp nodenum)
     (cond
@@ -41,7 +47,7 @@
 )
 (defun start (exp nodenum)
     (cond
-        ((null exp) (list (list nodenum)))
+        ((null exp) (list (makeauto nodenum 'eps nil)))
         ((listp (car exp)) (append (iflist (car exp) nodenum) (start (cdr exp) (+ nodenum 1))))
         ((characterp (car exp)) (ifchar exp nodenum))
         (T (start (cdr exp) nodenum))
@@ -53,5 +59,5 @@
 )
 
 ; (print (regex '(#\a + \| #\a #\b (#\x \| #\y)*)))
-; (print (regex '(#\a + #\b \| #\d #\c *)))
-(print (regex '((#\a \| #\b) #\c)))
+(print (regex '(#\a + #\b * \| #\d #\c *)))
+; (print (regex '((#\a \| #\b) +)))
