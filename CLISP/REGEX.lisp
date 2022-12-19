@@ -1,3 +1,4 @@
+; ---------------------------------make automate from regulare expression-------------------------------------------------------------
 (defun makeauto(node1 symbol node2)
     (cond
         ((eq nil node2) (list node1 symbol))
@@ -24,7 +25,7 @@
 (defun ifchar(exp nodenum)
     (cond
         ((characterp (cadr exp)) (append (list (makeauto nodenum (car exp) (+ 1 nodenum))) (start (cdr exp) (+ 1 nodenum))))
-        ((eq '\| (cadr exp)) (append (list (makeauto nodenum (car exp) (+ 1 nodenum))) (start (cddr exp) nodenum)))
+        ((eq '\| (cadr exp)) (append (list (makeauto nodenum (car exp) nodenum)) (start (cddr exp) nodenum)))
         (T (append (iteration (cadr exp) nodenum (car exp)) (start (cddr exp) (+ 1 nodenum))))
     )
 )
@@ -57,7 +58,32 @@
 (defun regex(expression)
     (start expression 0)
 )
+; ------------------------------------determinate automate-----------------------------------------------------------------
+(defun getvalue(automate)
+    (cadr automate)
+)
+(defun getfirstnode(exp)
+    (car exp)
+)
+(defun getlastnode(exp)
+    (caddr exp)
+)
+(defun deleps(automate)
+    (cond
+        ((null (cdr automate)) nil)
+        (T (list (makeauto (getfirstnode (car automate)) (getvalue (cadr automate)) (getlastnode (cadr automate)))))
+    )
+)
+
+(defun determinate (automate)
+    (cond
+        ((null automate) nil)
+        ((eq 'eps (getvalue (car automate))) (append (deleps automate) (determinate (cddr automate))))
+        (T (append (list (car automate)) (determinate (cdr automate))))
+    )
+)
 
 ; (print (regex '(#\a + \| #\a #\b (#\x \| #\y)*)))
-(print (regex '(#\a + #\b * \| #\d #\c *)))
 ; (print (regex '((#\a \| #\b) +)))
+(print (regex '(#\a + #\b * \| #\d #\c *)))
+(print (determinate (regex '(#\a + #\b * \| #\d #\c *))))
