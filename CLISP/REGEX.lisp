@@ -25,7 +25,7 @@
 (defun ifchar(exp nodenum)
     (cond
         ((characterp (cadr exp)) (append (list (makeauto nodenum (car exp) (+ 1 nodenum))) (start (cdr exp) (+ 1 nodenum))))
-        ((eq '\| (cadr exp)) (append (list (makeauto nodenum (car exp) nodenum)) (start (cddr exp) nodenum)))
+        ((eq '\| (cadr exp)) (append (list (makeauto nodenum (car exp) (+ 1 nodenum))) (start (cddr exp) nodenum)))
         (T (append (iteration (cadr exp) nodenum (car exp)) (start (cddr exp) (+ 1 nodenum))))
     )
 )
@@ -70,7 +70,7 @@
 )
 (defun deleps(automate)
     (cond
-        ((null (cdr automate)) nil)
+        ((null (cdr automate)) (list (car automate)))
         (T (list (makeauto (getfirstnode (car automate)) (getvalue (cadr automate)) (getlastnode (cadr automate)))))
     )
 )
@@ -85,5 +85,5 @@
 
 ; (print (regex '(#\a + \| #\a #\b (#\x \| #\y)*)))
 ; (print (regex '((#\a \| #\b) +)))
-(print (regex '(#\a + #\b * \| #\d #\c *)))
-(print (determinate (regex '(#\a + #\b * \| #\d #\c *))))
+(print (regex '(#\a + #\b \| #\a #\b * #\a)))
+(print (determinate (regex '(#\a + #\b \| #\a #\b * #\a))))
