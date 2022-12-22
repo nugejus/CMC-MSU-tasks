@@ -29,7 +29,7 @@
     (cond
         ((null iter) (list (makeauto nodenum val (+ 1 nodenum))))
         ((eq '+ iter) (append (list (makeauto nodenum val (+ 1 nodenum))) (list (makeauto (+ 1 nodenum) val (+ 1 nodenum)))))
-        ((eq '* iter) (append (list (makeauto nodenum val nodenum)) (list (makeauto nodenum 'eps (+ 1 nodenum)))))
+        ((eq '* iter) (append (list (makeauto nodenum 'eps (+ 1 nodenum))) (list (makeauto (+ 1 nodenum) val (+ 1 nodenum)))))
         (T nil)
     )
 )
@@ -53,7 +53,7 @@
         (T (append (ifcharfirst (car exp) nodenum) (start (cdr exp) (+ 100 nodenum))))
     )
 )
-
+;------------------------------------------------------------------------------------------------------------------------------
 (defun getvalue(automate)
     (cadr automate)
 )
@@ -79,7 +79,8 @@
 )
 ;--------------------------------------------------------------------------------------------------------------------------
 (defun regex(expression)
-    (determinate (start (paral expression) 0))
+    (start (paral expression) 0)
 )
 
 (print (regex '(#\a + #\b \| #\a #\b * #\a)))
+; (print (regex '(#\a #\b + #\a * #\b \| #\a #\b + #\a + #\b + #\b)))
