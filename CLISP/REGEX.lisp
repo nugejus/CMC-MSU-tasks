@@ -1,4 +1,4 @@
-;-----------------------------------------parallelize functions-------------------------------------------------------------
+;---------------------------------------------------parallelize functions----------------------------------------------------
 (defun deltil(exp)
     (cond
         ((null exp) nil)
@@ -19,7 +19,7 @@
         (T (cons (gettil exp) (paral (deltil exp))))
     )
 )
-;----------------------------------------------automatize functions--------------------------------------------------------
+;----------------------------------------------------automatize functions------------------------------------------------------
 (defun makeauto(node1 symbol node2)
     (cond
         ((eq nil node2) (list node1 symbol))
@@ -44,7 +44,7 @@
 (defun ifcharfirst(exp nodenum)
     (cond
         ((null exp)nil)
-        ((characterp (cadr exp)) (append (list (makeauto 'S (car exp) (+ 1 nodenum))) (ifchar (cdr exp) (+ 1 nodenum))))
+        ((characterp (cadr exp)) (append (list (makeauto nodenum (car exp) (+ 1 nodenum))) (ifchar (cdr exp) (+ 1 nodenum))))
         (T (append (iteration (cadr exp) nodenum (car exp)) (ifchar (cddr exp) (+ 1 nodenum))))
     )
 )
@@ -54,7 +54,7 @@
         (T (append (ifcharfirst (car exp) nodenum) (start (cdr exp) (+ 100 nodenum))))
     )
 )
-;-----------------------------------------------combining functions-------------------------------------------------------------
+;---------------------------------------------------end-combining functions----------------------------------------------------------
 (defun check-end(x auto)
     (cond
         ((null auto) T)
@@ -78,21 +78,23 @@
         (T (append (list (car auto)) (CL (cdr auto) lastnodes)))
     )
 )
-;----------------------------------------------determinating functions-----------------------------------------------------------
-(defun search-set (node val auto)
+;--------------------------------------------------determinating functions--------------------------------------------------------
+(defun search-set (node val auto)(append (list node val) (__search-set__ node val auto)))
+(defun __search-set__ (node val auto)
     (cond
         ((null auto) nil)
-        ((and (eq node (caar auto)) (eq val (cadr (car auto)))) (cons (caddr (car auto)) (search-set node val (cdr auto))))
-        (T (search-set node val (cdr auto)))
+        ((and (eq node (caar auto)) (eq val (cadr (car auto)))) (cons (caddr (car auto)) (__search-set__ node val (cdr auto))))
+        (T (__search-set__ node val (cdr auto)))
     )
 )
 (defun determinate (automate))
-;----------------------------------------------------main------------------------------------------------------------------
+;-----------------------------------------------------------main------------------------------------------------------------------
 (defun regex(expression)
     (combine-last (start (paral expression) 0))
 )
 
 (print (regex '(#\a + #\b \| #\a #\b * #\a)))
 ; (print (determinate (regex '(#\a + #\b \| #\a #\b * #\a))))
+(print (search-set '0 '#\a (regex '(#\a + #\b \| #\a #\b * #\a))))
 
 ; (print (regex '(#\a #\b + #\a * #\b \| #\a #\b + #\a + #\b + #\b)))
