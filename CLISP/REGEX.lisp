@@ -43,7 +43,7 @@
 (defun ifcharfirst(exp nodenum)
     (cond
         ((null exp)nil)
-        ((characterp (cadr exp)) (append (list (makeauto 0 (car exp) (+ 1 nodenum))) (ifchar (cdr exp) (+ 1 nodenum))))
+        ((characterp (cadr exp)) (append (list (makeauto 'S (car exp) (+ 1 nodenum))) (ifchar (cdr exp) (+ 1 nodenum))))
         (T (append (iteration (cadr exp) nodenum (car exp)) (ifchar (cddr exp) (+ 1 nodenum))))
     )
 )
@@ -54,33 +54,34 @@
     )
 )
 ;------------------------------------------------------------------------------------------------------------------------------
-(defun getvalue(automate)
-    (cadr automate)
-)
-(defun getfirstnode(exp)
-    (car exp)
-)
-(defun getlastnode(exp)
-    (caddr exp)
-)
-(defun deleps(automate)
+(defun searchset (node val auto)
     (cond
-        ((null (cdr automate)) (list (car automate)))
-        (T (list (makeauto (getfirstnode (car automate)) (getvalue (cadr automate)) (getlastnode (cadr automate)))))
+        ((null auto) nil)
+        ((and (eq node (caar auto)) (eq val (cadr (car auto)))) (cons (caddr (car auto)) (searchset node val (cdr auto))))
+        (T (searchset node val (cdr auto)))
+    )
+)
+(defun getlasts (auto)
+
+)
+(defun combine-last(auto) (CL auto (getlasts auto)))
+(defun CL(auto lastnodes)
+    (cond
+        ((null auto) nil)
+        ((subset (list (caddr (car auto)) lastnodes) (append (list (makeauto (caar auto) (cadr auto) 'F)) (CL (cdr auto) lastnodes)))
+        (T (append (list (car auto)) (CL (cdr auto) lastnodes)))
     )
 )
 
-(defun determinate (automate)
-    (cond
-        ((null automate) nil)
-        ((eq 'eps (getvalue (car automate))) (append (deleps automate) (determinate (cddr automate))))
-        (T (append (list (car automate)) (determinate (cdr automate))))
-    )
-)
+(defun determinate (automate))
 ;--------------------------------------------------------------------------------------------------------------------------
 (defun regex(expression)
     (start (paral expression) 0)
 )
 
 (print (regex '(#\a + #\b \| #\a #\b * #\a)))
+; (print (determinate (regex '(#\a + #\b \| #\a #\b * #\a))))
+(print (searchset '0 '#\a (regex '(#\a + #\b \| #\a #\b * #\a))))
+(print (combine-last (regex '(#\a + #\b \| #\a #\b * #\a))))
+
 ; (print (regex '(#\a #\b + #\a * #\b \| #\a #\b + #\a + #\b + #\b)))
