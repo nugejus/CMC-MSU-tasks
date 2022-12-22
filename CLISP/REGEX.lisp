@@ -53,35 +53,47 @@
         (T (append (ifcharfirst (car exp) nodenum) (start (cdr exp) (+ 100 nodenum))))
     )
 )
-;------------------------------------------------------------------------------------------------------------------------------
-(defun searchset (node val auto)
+;-------------------------------------------------------------------------------------------------------------------------------
+(defun check-end(x auto)
     (cond
-        ((null auto) nil)
-        ((and (eq node (caar auto)) (eq val (cadr (car auto)))) (cons (caddr (car auto)) (searchset node val (cdr auto))))
-        (T (searchset node val (cdr auto)))
+        ((null auto) T)
+        ((eq (+ 1 x) (caddr (car auto))) nil)
+        (T (check-end x (cdr auto)))
     )
 )
-(defun getlasts (auto)
-
+(defun get-ends (auto)
+    (cond
+        ((null auto) nil)
+        ((check-end (caddr (car auto)) auto) (cons (caddr (car auto)) (get-ends (cdr auto))))
+        (T (get-ends (cdr auto)))
+    )
 )
-(defun combine-last(auto) (CL auto (getlasts auto)))
+
+(defun combine-last(auto) (CL auto (get-ends auto)))
 (defun CL(auto lastnodes)
     (cond
         ((null auto) nil)
-        ((subset (list (caddr (car auto)) lastnodes) (append (list (makeauto (caar auto) (cadr auto) 'F)) (CL (cdr auto) lastnodes)))
+        ((subsetp (list (caddr (car auto))) lastnodes) (append (list (makeauto (caar auto) (cadr (car auto)) 'F)) (CL (cdr auto) lastnodes)))
         (T (append (list (car auto)) (CL (cdr auto) lastnodes)))
     )
 )
+;------------------------------------------------------------------------------------------------------------------------------
+(defun search-set (node val auto)
+    (cond
+        ((null auto) nil)
+        ((and (eq node (caar auto)) (eq val (cadr (car auto)))) (cons (caddr (car auto)) (search-set node val (cdr auto))))
+        (T (search-set node val (cdr auto)))
+    )
+)
+
 
 (defun determinate (automate))
 ;--------------------------------------------------------------------------------------------------------------------------
 (defun regex(expression)
-    (start (paral expression) 0)
+    (combine-last (start (paral expression) 0))
 )
 
 (print (regex '(#\a + #\b \| #\a #\b * #\a)))
 ; (print (determinate (regex '(#\a + #\b \| #\a #\b * #\a))))
-(print (searchset '0 '#\a (regex '(#\a + #\b \| #\a #\b * #\a))))
-(print (combine-last (regex '(#\a + #\b \| #\a #\b * #\a))))
 
 ; (print (regex '(#\a #\b + #\a * #\b \| #\a #\b + #\a + #\b + #\b)))
